@@ -64,6 +64,12 @@ db.ResponseComment.belongsTo(db.Review, {
 });
 
 db.Image = require("./imageModel")(sequelize, DataTypes, Model);
+// One to many relation
+
+db.Room.hasMany(db.Image, {
+  foreignKey: "room_id",
+});
+
 db.Image.belongsTo(db.Room, {
   foreignKey: "room_id",
   onDelete: "CASCADE",
@@ -77,6 +83,6 @@ db.PoolRating.belongsTo(db.Review, {
   onUpdate: "CASCADE",
 });
 
-// db.sequelize.sync({ force: true });
+db.sequelize.sync();
 
 module.exports = db;
