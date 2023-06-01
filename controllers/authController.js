@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const { promisify } = require("util");
 const { User } = require("../models/index");
 
 const signToken = (id) => {
@@ -89,38 +90,50 @@ exports.restrictTo = (...roles) => {
 
 exports.protect = async (req, res, next) => {
   // 1) Getting token and check of it's there
-  let token;
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith("Bearer")
-  ) {
-    token = req.headers.authorization.split(" ")[1];
-  }
-  if (!token) {
-    res.status(401).json({
-      status: "fail",
-      message: "You are not logged in! Please login to get access.",
-    });
-  }
-  // 2) Verification token
-  const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
-  // console.log(decoded);
-  // 3) Check if user still exists
-  const currentUser = await User.findById(decoded.id);
-  if (!currentUser) {
-    res.status(401).json({
-      status: "fail",
-      message: "The User belonging to this token does no longer exist.",
-    });
-  }
-  // 4) Check if user change password after the token was issued
-  // if (currentUser.changedPasswordAfter(decoded.iat)) {
-  //   return next(
-  //     new AppError("User recently changed password! Please login again.", 401)
-  //   );
-  // }
 
-  //GRANT ACCESS TO THE PROTECTED ROUTE
-  req.user = currentUser;
-  next();
+  try {
+    let token;
+    if (
+      req.headers.authorization &&
+      req.headers.authorization.startsWith("Bearer")
+    ) {
+      token = req.headers.authorization.split(" ")[1];
+    }
+    // console.log(token);
+    if (!token) {
+      res.status(401).json({
+        status: "fail",
+        message: "You are not logged in! Please login to get access.",
+      });
+    }
+    // 2) Verification token
+    const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+
+    // console.log(decoded);
+    // 3) Check if user still exists
+    const currentUser = await User.findOne({ where: { id: decoded.id } });
+    // console.log(currentUser);
+    if (!currentUser) {
+      res.status(401).json({
+        status: "fail",
+        message: "The User belonging to this token does no longer exist.",
+      });
+    }
+    // 4) Check if user change password after the token was issued
+    // if (currentUser.changedPasswordAfter(decoded.iat)) {
+    //   return next(
+    //     new AppError("User recently changed password! Please login again.", 401)
+    //   );
+    // }
+
+    //GRANT ACCESS TO THE PROTECTED ROUTE
+    req.user = currentUser;
+    console.log("The current user is:", req.user);
+    next();
+  } catch (error) {
+    res.status(404).json({
+      status: "fail",
+      message: error,
+    });
+  }
 };

@@ -1,4 +1,4 @@
-const { Sequelize, DataTypes, Model } = require("sequelize");
+const { Sequelize, DataTypes, Model, QueryTypes } = require("sequelize");
 const sequelize = new Sequelize("gym_db", "root", "", {
   host: "localhost",
   dialect: "mysql",
@@ -20,6 +20,7 @@ connectDB();
 const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
+db.QueryTypes = QueryTypes;
 
 // Make User Model
 db.User = require("./userModel")(sequelize, DataTypes, Model);
