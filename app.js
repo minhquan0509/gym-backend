@@ -20,9 +20,6 @@ app.use(express.static(`${__dirname}/public`));
 //   next();
 // });
 
-// app.get("/", (req, res) => {
-//   res.send("Hello World");
-// });
 app.use("/rooms", roomRouter);
 app.use("/users", userRouter);
 

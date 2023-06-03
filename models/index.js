@@ -52,6 +52,7 @@ db.ResponseComment = require("./responseCommentModel")(
   DataTypes,
   Model
 );
+
 db.ResponseComment.belongsTo(db.User, {
   foreignKey: "user_id",
   onDelete: "CASCADE",
