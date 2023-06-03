@@ -1,9 +1,52 @@
-const { Room, User } = require("../models/index");
+const { Room, User, sequelize, QueryTypes } = require("../models/index");
+
+// Execute queryString
+const queryStringFilter = (queryString) => {
+  let query = "select * from rooms where ";
+  const { name, address, priceMax, priceMin, service } = queryString;
+
+  if (name) {
+    query += `name like '%${name}%'`;
+  }
+  if (address) {
+    if (name) {
+      query += " and ";
+    }
+    query += `address like '%${address}%'`;
+  }
+  if (priceMax) {
+    if (name || address) query += " and ";
+    query += `price<${priceMax}`;
+  }
+  if (priceMin) {
+    if (name || address || priceMax) query += " and ";
+    query += `price>${priceMin}`;
+  }
+  if (service) {
+    if (name || address || priceMax || priceMin) query += " and ";
+    query += `${service}=1`;
+  }
+  return query;
+};
+
+// Checking the object is empty
+function isEmptyObject(obj) {
+  return JSON.stringify(obj) === "{}";
+}
 
 exports.getAllRooms = async (req, res) => {
   try {
-    const rooms = await Room.findAll();
-    res.status(200).json({
+    console.log(req.query);
+    let rooms;
+    if (!isEmptyObject(req.query)) {
+      const sql = queryStringFilter(req.query);
+      console.log(sql);
+      rooms = await sequelize.query(sql, { type: QueryTypes.SELECT });
+    } else {
+      rooms = await Room.findAll();
+    }
+
+    return res.status(200).json({
       status: "success",
       results: rooms.length,
       data: {
@@ -55,13 +98,21 @@ exports.getRoom = async (req, res) => {
         status: "fail",
         message: "No room found with that ID",
       });
-    } else
+    } else {
+      const ownerUser = await User.findOne({ where: { id: room.owner_id } });
+
+      // console.log(room.dataValues);
+
       return res.status(200).json({
         status: "success",
         data: {
-          room,
+          room: {
+            ...room.dataValues,
+            ownerName: ownerUser.name,
+          },
         },
       });
+    }
   } catch (error) {
     return res.status(400).json({
       status: "fail",
