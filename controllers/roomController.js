@@ -80,6 +80,19 @@ exports.updateRoom = async (req, res) => {
         message: "No room found with that ID",
       });
     }
+
+    if (req.body.hasOwnProperty("owner_id")) {
+      const ownerUser = await User.findOne({
+        where: { id: req.body.owner_id, role: "gym-owner" },
+      });
+      if (!ownerUser) {
+        return res.status(404).json({
+          status: "fail",
+          message: "Invalid owner_id",
+        });
+      }
+    }
+
     await Room.update(req.body, {
       where: {
         id: req.params.id,
