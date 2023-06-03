@@ -112,7 +112,10 @@ exports.createRoom = async (req, res) => {
 
 exports.getRoom = async (req, res) => {
   try {
-    const room = await Room.findOne({ where: { id: req.params.id } });
+    const room = await Room.findOne({
+      where: { id: req.params.id },
+      include: Image,
+    });
     // console.log(room);
     if (!room) {
       return res.status(400).json({
