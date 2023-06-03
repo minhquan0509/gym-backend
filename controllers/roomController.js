@@ -1,4 +1,4 @@
-const { Room, User, sequelize, QueryTypes } = require("../models/index");
+const { Room, User, sequelize, QueryTypes, Image } = require("../models/index");
 
 // Execute queryString
 const queryStringFilter = (queryString) => {
@@ -36,14 +36,35 @@ function isEmptyObject(obj) {
 
 exports.getAllRooms = async (req, res) => {
   try {
-    console.log(req.query);
+    // console.log(req.query);
     let rooms;
+
     if (!isEmptyObject(req.query)) {
       const sql = queryStringFilter(req.query);
       console.log(sql);
       rooms = await sequelize.query(sql, { type: QueryTypes.SELECT });
+      // console.log(rooms);
+
+      // Rooms with images
+
+      const imgRooms = rooms.map(async (room) => {
+        // console.log(room);
+        const images = await Image.findAll({ where: { room_id: room.id } });
+        // console.log(images);
+        const imagesObj = images.map((img) => {
+          return img.dataValues;
+        });
+        // console.log(imagesObj);
+        const value = { ...room, Images: imagesObj };
+        // console.log(value);
+        return value;
+      });
+
+      rooms = await Promise.all(imgRooms);
     } else {
-      rooms = await Room.findAll();
+      rooms = await Room.findAll({
+        include: Image,
+      });
     }
 
     return res.status(200).json({
@@ -75,7 +96,7 @@ exports.createRoom = async (req, res) => {
       });
     }
     const newRoom = await Room.create(req.body);
-    return res.status(200).json({
+    return res.status(201).json({
       status: "success",
       data: {
         room: newRoom,
@@ -91,7 +112,10 @@ exports.createRoom = async (req, res) => {
 
 exports.getRoom = async (req, res) => {
   try {
-    const room = await Room.findOne({ where: { id: req.params.id } });
+    const room = await Room.findOne({
+      where: { id: req.params.id },
+      include: Image,
+    });
     // console.log(room);
     if (!room) {
       return res.status(400).json({
