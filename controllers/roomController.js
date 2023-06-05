@@ -84,11 +84,18 @@ exports.getAllRooms = async (req, res) => {
 
 exports.createRoom = async (req, res) => {
   try {
+    const { images } = req.body;
+    delete req.body["images"];
+
+    // return res.json({
+    //   data: req.body,
+    // });
+
     const { owner_id } = req.body;
     const ownerUser = await User.findOne({
       where: { id: owner_id, role: "gym-owner" },
     });
-    console.log(ownerUser);
+    // console.log(ownerUser);
     if (!ownerUser) {
       return res.status(404).json({
         status: "error",
@@ -96,6 +103,15 @@ exports.createRoom = async (req, res) => {
       });
     }
     const newRoom = await Room.create(req.body);
+
+    // Insert the images of room into the database
+    images.forEach(async (image) => {
+      await Image.create({
+        room_id: newRoom.id,
+        image: image,
+      });
+    });
+
     return res.status(201).json({
       status: "success",
       data: {
