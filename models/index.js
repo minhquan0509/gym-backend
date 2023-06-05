@@ -72,6 +72,10 @@ db.Room.hasMany(db.Image, {
   foreignKey: "room_id",
 });
 
+db.Room.hasMany(db.Review, {
+  foreignKey: "room_id",
+});
+
 db.Image.belongsTo(db.Room, {
   foreignKey: "room_id",
   onDelete: "CASCADE",

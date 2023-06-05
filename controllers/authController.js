@@ -79,12 +79,12 @@ exports.login = async (req, res) => {
 exports.restrictTo = (...roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {
-      res.status(403).json({
+      return res.status(403).json({
         status: "fail",
         message: "You do not have permission to perform this action",
       });
     }
-    next();
+    return next();
   };
 };
 
@@ -101,7 +101,7 @@ exports.protect = async (req, res, next) => {
     }
     // console.log(token);
     if (!token) {
-      res.status(401).json({
+      return res.status(401).json({
         status: "fail",
         message: "You are not logged in! Please login to get access.",
       });
@@ -114,7 +114,7 @@ exports.protect = async (req, res, next) => {
     const currentUser = await User.findOne({ where: { id: decoded.id } });
     // console.log(currentUser);
     if (!currentUser) {
-      res.status(401).json({
+      return res.status(401).json({
         status: "fail",
         message: "The User belonging to this token does no longer exist.",
       });
@@ -129,9 +129,9 @@ exports.protect = async (req, res, next) => {
     //GRANT ACCESS TO THE PROTECTED ROUTE
     req.user = currentUser;
     console.log("The current user is:", req.user);
-    next();
+    return next();
   } catch (error) {
-    res.status(404).json({
+    return res.status(404).json({
       status: "fail",
       message: error,
     });
