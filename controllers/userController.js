@@ -6,7 +6,7 @@ exports.getAllUsers = async (req, res, next) => {
     // const users = await sequelize.query("SELECT * FROM `users`", {
     //   type: QueryTypes.SELECT,
     // });
-    res.status(200).json({
+    return res.status(200).json({
       status: "success",
       results: users.length,
       data: {
@@ -14,7 +14,7 @@ exports.getAllUsers = async (req, res, next) => {
       },
     });
   } catch (error) {
-    res.status(404).json({
+    return res.status(404).json({
       status: "fail",
       message: error,
     });
