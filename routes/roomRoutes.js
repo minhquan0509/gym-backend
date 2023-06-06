@@ -9,7 +9,7 @@ router
   .route("/")
   .get(roomController.getAllRooms)
   .post(
-    uploadRoomController.upload.array("images", 2),
+    uploadRoomController.upload.array("images", 3),
     uploadRoomController.handlePostRoomImages,
     roomController.createRoom
   );
