@@ -13,7 +13,7 @@ exports.signup = async (req, res) => {
   try {
     const { password, confirmPassword } = req.body;
     if (password !== confirmPassword) {
-      res.status(400).json({
+      return res.status(400).json({
         status: "fail",
         message: "The confirm password is not match",
       });
@@ -27,7 +27,7 @@ exports.signup = async (req, res) => {
     });
     const token = signToken(newUser.id);
 
-    res.status(201).json({
+    return res.status(201).json({
       status: "success",
       token,
       data: {
@@ -35,7 +35,7 @@ exports.signup = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(400).json({
+    return res.status(400).json({
       status: "fail",
       message: error,
     });
@@ -47,13 +47,15 @@ exports.login = async (req, res) => {
     const { username, password } = req.body;
     // console.log(req.body);
     if (!username || !password) {
-      res.status(404).json({
+      return res.status(404).json({
         status: "fail",
         message: "Please provide email (username) and password",
       });
     }
-    const user = await User.findOne({ where: { username } });
-    console.log(user.username, user.password);
+    const user = await User.findOne({
+      where: { username },
+    });
+    // console.log(user.username, user.password);
     const correct = await bcrypt.compare(password, user.password);
 
     if (!user || !correct) {
@@ -63,13 +65,20 @@ exports.login = async (req, res) => {
       });
     }
 
+    // console.log(user.dataValues);
+
+    delete user.dataValues.password;
+
     const token = signToken(user.id);
-    res.status(200).json({
+    return res.status(200).json({
       status: "success",
       token,
+      data: {
+        currentUser: user,
+      },
     });
   } catch (error) {
-    res.status(400).json({
+    return res.status(400).json({
       status: "fail",
       message: "Login fail",
     });
