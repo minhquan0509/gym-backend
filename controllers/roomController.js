@@ -24,8 +24,13 @@ const queryStringFilter = (queryString) => {
   }
   if (service) {
     if (name || address || priceMax || priceMin) query += " and ";
-    query += `${service}=1`;
+    // query += `${service}=1`;
+    for (const el in service) {
+      query += `${el}=1 and `;
+    }
+    return query.slice(0, query.length - 4);
   }
+
   return query;
 };
 
@@ -36,7 +41,7 @@ function isEmptyObject(obj) {
 
 exports.getAllRooms = async (req, res) => {
   try {
-    // console.log(req.query);
+    console.log(req.query);
     let rooms;
 
     if (!isEmptyObject(req.query)) {
