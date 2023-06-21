@@ -168,6 +168,7 @@ exports.getRoom = async (req, res) => {
 
 exports.updateRoom = async (req, res) => {
   try {
+    req.body = JSON.parse(JSON.stringify(req.body));
     const room = await Room.findOne({ where: { id: req.params.id } });
     // console.log(room);
     if (!room) {
@@ -195,6 +196,8 @@ exports.updateRoom = async (req, res) => {
       },
     });
 
+    console.log(room);
+
     const updatedRoom = await Room.findOne({ where: { id: req.params.id } });
 
     return res.status(200).json({
@@ -206,7 +209,7 @@ exports.updateRoom = async (req, res) => {
   } catch (error) {
     return res.status(400).json({
       status: "fail",
-      error,
+      error: "Something went wrong...",
     });
   }
 };

@@ -4,6 +4,7 @@ const reviewController = require("./../controllers/reviewController");
 const authController = require("../controllers/authController");
 const uploadRoomController = require("../controllers/uploadRoomController");
 const router = express.Router();
+const multer = require("multer");
 
 router
   .route("/")
@@ -16,7 +17,7 @@ router
 router
   .route("/:id")
   .get(roomController.getRoom)
-  .patch(roomController.updateRoom)
+  .patch(multer().none(), roomController.updateRoom)
   .delete(roomController.deleteRoom);
 
 router
