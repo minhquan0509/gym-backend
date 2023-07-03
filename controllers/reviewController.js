@@ -11,7 +11,11 @@ exports.getAllComments = async (req, res) => {
   try {
     const room = await Room.findOne({
       where: { id: req.params.id },
-      include: Review,
+    });
+
+    const reviews = await Review.findAll({
+      where: { room_id: room.id },
+      include: [ReviewImage, PoolRating, { model: User, attributes: ["name"] }],
     });
 
     if (!room) {
@@ -24,7 +28,7 @@ exports.getAllComments = async (req, res) => {
     return res.status(200).json({
       status: "success",
       data: {
-        Reviews: room.Reviews,
+        reviews,
       },
     });
   } catch (error) {

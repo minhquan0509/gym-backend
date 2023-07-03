@@ -100,6 +100,10 @@ db.Review.hasMany(db.ReviewImage, {
   foreignKey: "review_id",
 });
 
-db.sequelize.sync({ alter: true });
+db.Review.hasOne(db.PoolRating, {
+  foreignKey: "review_id",
+});
+
+db.sequelize.sync();
 
 module.exports = db;
