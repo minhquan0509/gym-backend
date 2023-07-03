@@ -51,6 +51,7 @@ exports.handlePostRoomImages = (req, res, next) => {
     return res.status(400).json({
       status: "fail",
       message: "Some error when uploading file...",
+      error,
     });
   }
 };

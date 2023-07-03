@@ -42,6 +42,10 @@ module.exports = (sequelize, DataTypes, Model) => {
         values: ["admin", "gym-owner", "user", "guest"],
         defaultValue: "guest",
       },
+      lastLogin: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
     },
     {
       // Other model options go here

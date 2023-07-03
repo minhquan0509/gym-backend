@@ -3,6 +3,7 @@ const roomController = require("./../controllers/roomController");
 const reviewController = require("./../controllers/reviewController");
 const authController = require("../controllers/authController");
 const uploadRoomController = require("../controllers/uploadRoomController");
+const uploadReviewController = require("../controllers/uploadReviewController");
 const router = express.Router();
 const multer = require("multer");
 
@@ -26,6 +27,8 @@ router
   .post(
     authController.protect,
     authController.restrictTo("admin", "user", "gym-owner"),
+    uploadReviewController.upload.array("images", 3),
+    uploadReviewController.handlePostReviewImage,
     reviewController.createComment
   );
 

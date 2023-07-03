@@ -2,7 +2,7 @@ const { Sequelize, DataTypes, Model, QueryTypes } = require("sequelize");
 const sequelize = new Sequelize("gym_db", "root", "", {
   host: "localhost",
   dialect: "mysql",
-  port: 3308,
+  port: 3306,
 });
 
 // Connecting to MySQL Database
@@ -89,6 +89,17 @@ db.PoolRating.belongsTo(db.Review, {
   onUpdate: "CASCADE",
 });
 
-db.sequelize.sync();
+db.ReviewImage = require("./reviewImageModel")(sequelize, DataTypes, Model);
+db.ReviewImage.belongsTo(db.Review, {
+  foreignKey: "review_id",
+  onDelete: "CASCADE",
+  onUpdate: "CASCADE",
+});
+
+db.Review.hasMany(db.ReviewImage, {
+  foreignKey: "review_id",
+});
+
+db.sequelize.sync({ alter: true });
 
 module.exports = db;
