@@ -4,7 +4,7 @@ const { v4: uuidv4 } = require("uuid");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, "..", "public", "avatars"));
+    cb(null, path.join(__dirname, "..", "public", "reviews"));
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + "-" + uuidv4();
@@ -28,13 +28,29 @@ exports.upload = multer({
   fileFilter,
 });
 
-const hostName = "127.0.0.1:3001/avatars/";
+const hostName = "127.0.0.1:3001/reviews/";
 
-exports.postAvatar = (req, res) => {
-  const avatarImg = hostName + req.file.filename;
+exports.handlePostReviewImage = (req, res, next) => {
+  try {
+    const reviewRoomImages = req.files.map((file) => {
+      return hostName + file.filename;
+    });
+    req.body.images = reviewRoomImages;
 
-  return res.status(200).json({
-    status: "success",
-    linkFile: avatarImg,
-  });
+    console.log(req.body.images);
+
+    // return res.status(200).json({
+    //   status: "success",
+    //   data: {
+    //     images: req.body.images,
+    //   },
+    // });
+
+    return next();
+  } catch (error) {
+    return res.status(400).json({
+      status: "fail",
+      message: "Some error when uploading file...",
+    });
+  }
 };

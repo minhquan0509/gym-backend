@@ -10,6 +10,7 @@ module.exports = (sequelize, DataTypes, Model) => {
       },
       room_id: {
         type: DataTypes.INTEGER,
+        allowNull: false,
       },
       image: {
         type: DataTypes.STRING,

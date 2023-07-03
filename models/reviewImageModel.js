@@ -1,27 +1,28 @@
 module.exports = (sequelize, DataTypes, Model) => {
-  class PoolRating extends Model {}
-  PoolRating.init(
+  class ReviewImage extends Model {}
+  ReviewImage.init(
     {
       // Model attributes are defined here
-      // room_id: {
-      //   type: DataTypes.INTEGER,
-      //   primaryKey: true,
-      // },
-      review_id: {
+      id: {
         type: DataTypes.INTEGER,
+        autoIncrement: true,
         primaryKey: true,
       },
-      rating: {
-        type: DataTypes.FLOAT,
+      review_id: {
+        type: DataTypes.INTEGER,
         allowNull: false,
+      },
+      image: {
+        type: DataTypes.STRING,
+        allowNull: true,
       },
     },
     {
       // Other model options go here
       sequelize, // We need to pass the connection instance
-      modelName: "PoolRating", // We need to choose the model name
+      modelName: "ReviewImage", // We need to choose the model name
       timestamps: true,
     }
   );
-  return PoolRating;
+  return ReviewImage;
 };

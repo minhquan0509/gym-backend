@@ -18,13 +18,11 @@ module.exports = (sequelize, DataTypes, Model) => {
       },
       review: {
         type: DataTypes.STRING,
+        allowNull: false,
       },
       rating: {
         type: DataTypes.FLOAT,
         allowNull: false,
-      },
-      image: {
-        type: DataTypes.STRING,
       },
       like: {
         type: DataTypes.INTEGER,

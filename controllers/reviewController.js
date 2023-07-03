@@ -1,4 +1,11 @@
-const { Room, User, sequelize, Review } = require("../models/index");
+const {
+  Room,
+  User,
+  sequelize,
+  Review,
+  PoolRating,
+  ReviewImage,
+} = require("../models/index");
 
 exports.getAllComments = async (req, res) => {
   try {
@@ -28,9 +35,18 @@ exports.getAllComments = async (req, res) => {
   }
 };
 
+const block = (res) => {
+  return res.status(500).json({
+    status: "block",
+    message: "The createComment is currently blocking",
+  });
+};
+
 exports.createComment = async (req, res) => {
   try {
     const room = await Room.findOne({ where: { id: req.params.id } });
+    // console.log(room.pool);
+    // return block(res);
     const currentUser = req.user;
     if (!room || !currentUser) {
       return res.status(404).json({
@@ -39,15 +55,31 @@ exports.createComment = async (req, res) => {
       });
     }
 
-    const { review, rating, image } = req.body;
+    const { review, rating, images, poolRating } = req.body;
 
     const newComment = await Review.create({
       user_id: currentUser.id,
       room_id: room.id,
-      review: review ? review : null,
+      review,
       rating,
-      image,
     });
+
+    if (room.pool) {
+      const newPoolRating = await PoolRating.create({
+        review_id: newComment.id,
+        rating: poolRating,
+      });
+    }
+    // console.log(images);
+
+    if (images.length > 0) {
+      images.forEach(async (image) => {
+        await ReviewImage.create({
+          review_id: newComment.id,
+          image: image,
+        });
+      });
+    }
 
     return res.status(201).json({
       status: "success",
