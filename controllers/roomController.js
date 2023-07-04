@@ -154,6 +154,7 @@ exports.getRoom = async (req, res) => {
           room: {
             ...room.dataValues,
             ownerName: ownerUser.name,
+            lastLogin: ownerUser.lastLogin,
           },
         },
       });
