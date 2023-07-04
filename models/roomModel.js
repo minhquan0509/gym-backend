@@ -46,6 +46,10 @@ module.exports = (sequelize, DataTypes, Model) => {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
       },
+      pool_rating: {
+        type: DataTypes.FLOAT,
+        defaultValue: null,
+      },
     },
     {
       // Other model options go here

@@ -32,4 +32,12 @@ router
     reviewController.createComment
   );
 
+router
+  .route("/:id/reviews/:reviewID")
+  .delete(
+    authController.protect,
+    authController.restrictTo("admin", "user", "gym-owner"),
+    reviewController.deleteComment
+  );
+
 module.exports = router;

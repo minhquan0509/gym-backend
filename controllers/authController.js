@@ -70,6 +70,7 @@ exports.login = async (req, res) => {
     delete user.dataValues.password;
 
     const token = signToken(user.id);
+    await user.update({ lastLogin: Date.now() });
     return res.status(200).json({
       status: "success",
       token,

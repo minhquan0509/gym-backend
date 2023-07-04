@@ -42,7 +42,7 @@ exports.getAllComments = async (req, res) => {
 const block = (res) => {
   return res.status(500).json({
     status: "block",
-    message: "The createComment is currently blocking",
+    message: "The CreateComment process is currently blocking",
   });
 };
 
@@ -55,7 +55,7 @@ exports.createComment = async (req, res) => {
     if (!room || !currentUser) {
       return res.status(404).json({
         status: "fail",
-        message: "Can't find Room with that id or User",
+        message: "Can't find Room with that ID or User",
       });
     }
 
@@ -95,6 +95,43 @@ exports.createComment = async (req, res) => {
     return res.status(400).json({
       status: "fail",
       message: error,
+    });
+  }
+};
+
+exports.deleteComment = async (req, res) => {
+  try {
+    const room = await Room.findOne({ where: { id: req.params.id } });
+    const review = await Review.findOne({ where: { id: req.params.reviewID } });
+    const currentUser = req.user;
+    if (!room || !currentUser || !review) {
+      return res.status(404).json({
+        status: "fail",
+        message: "Can't find Room with that ID or User or Review",
+      });
+    }
+
+    if (currentUser.id === review.user_id || currentUser.role === "admin") {
+      await Review.destroy({
+        where: {
+          id: req.params.reviewID,
+        },
+      });
+
+      return res.status(204).json({
+        status: "success",
+        data: null,
+      });
+    }
+
+    return res.status(400).json({
+      status: "fail",
+      data: null,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      status: "fail",
+      error,
     });
   }
 };
