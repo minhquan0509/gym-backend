@@ -112,6 +112,13 @@ exports.deleteComment = async (req, res) => {
     }
 
     if (currentUser.id === review.user_id || currentUser.role === "admin") {
+      // Adding this first
+      await PoolRating.destroy({
+        where: {
+          review_id: req.params.reviewID,
+        },
+      });
+
       await Review.destroy({
         where: {
           id: req.params.reviewID,
