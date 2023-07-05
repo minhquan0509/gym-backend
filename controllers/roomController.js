@@ -28,10 +28,13 @@ const queryStringFilter = (queryString) => {
     for (const el in service) {
       query += `${el}=1 and `;
     }
-    return query.slice(0, query.length - 4);
+    return (
+      query.slice(0, query.length - 4) +
+      " order by rating desc, pool_rating desc"
+    );
   }
 
-  return query;
+  return query + " order by rating desc, pool_rating desc";
 };
 
 // Checking the object is empty
@@ -72,6 +75,10 @@ exports.getAllRooms = async (req, res) => {
         where: {
           status: 1,
         },
+        order: [
+          ["rating", "desc"],
+          ["pool_rating", "desc"],
+        ],
       });
     }
 
