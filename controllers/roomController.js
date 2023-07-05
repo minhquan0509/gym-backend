@@ -2,7 +2,7 @@ const { Room, User, sequelize, QueryTypes, Image } = require("../models/index");
 
 // Execute queryString
 const queryStringFilter = (queryString) => {
-  let query = "select * from rooms where status!=0";
+  let query = "select * from rooms where status!=0 and ";
   const { name, address, priceMax, priceMin, service } = queryString;
 
   if (name) {
