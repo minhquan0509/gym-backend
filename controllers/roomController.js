@@ -2,7 +2,7 @@ const { Room, User, sequelize, QueryTypes, Image } = require("../models/index");
 
 // Execute queryString
 const queryStringFilter = (queryString) => {
-  let query = "select * from rooms where ";
+  let query = "select * from rooms where status!=0";
   const { name, address, priceMax, priceMin, service } = queryString;
 
   if (name) {
@@ -69,6 +69,9 @@ exports.getAllRooms = async (req, res) => {
     } else {
       rooms = await Room.findAll({
         include: Image,
+        where: {
+          status: 1,
+        },
       });
     }
 
@@ -237,6 +240,78 @@ exports.deleteRoom = async (req, res) => {
   } catch (error) {
     return res.status(400).json({
       status: "fail",
+      error,
+    });
+  }
+};
+
+exports.inactiveRoom = async (req, res) => {
+  try {
+    const room = await Room.findOne({ where: { id: req.params.id } });
+    if (!room) {
+      return res.status(400).json({
+        status: "fail",
+        message: "No room found with that ID",
+      });
+    }
+
+    // console.log(req.user.id, room.owner_id);
+
+    if (req.user.id !== room.owner_id) {
+      return res.status(400).json({
+        status: "fail",
+        message:
+          "Inactive room fail because you are not the owner of this room",
+      });
+    } else {
+      await room.update({ status: false });
+      return res.status(200).json({
+        status: "success",
+        data: {
+          room,
+        },
+      });
+    }
+  } catch (error) {
+    return res.status(400).json({
+      status: "fail",
+      message: "Inactive room fail",
+      error,
+    });
+  }
+};
+
+exports.activeRoom = async (req, res) => {
+  try {
+    const room = await Room.findOne({ where: { id: req.params.id } });
+    if (!room) {
+      return res.status(400).json({
+        status: "fail",
+        message: "No room found with that ID",
+      });
+    }
+
+    // console.log(req.user.id, room.owner_id);
+
+    if (req.user.id !== room.owner_id) {
+      return res.status(400).json({
+        status: "fail",
+        message:
+          "Activate room fail because you are not the owner of this room",
+      });
+    } else {
+      await room.update({ status: true });
+      return res.status(200).json({
+        status: "success",
+        data: {
+          room,
+        },
+      });
+    }
+  } catch (error) {
+    return res.status(400).json({
+      status: "fail",
+      message: "Activate room fail",
       error,
     });
   }

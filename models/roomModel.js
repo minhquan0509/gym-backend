@@ -50,6 +50,17 @@ module.exports = (sequelize, DataTypes, Model) => {
         type: DataTypes.FLOAT,
         defaultValue: null,
       },
+      status: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true,
+      },
+      phone: {
+        type: DataTypes.STRING(10),
+        validate: {
+          isNumeric: true,
+          len: 10,
+        },
+      },
     },
     {
       // Other model options go here

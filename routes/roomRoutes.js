@@ -22,6 +22,22 @@ router
   .delete(roomController.deleteRoom);
 
 router
+  .route("/:id/inactive")
+  .post(
+    authController.protect,
+    authController.restrictTo("gym-owner"),
+    roomController.inactiveRoom
+  );
+
+router
+  .route("/:id/active")
+  .post(
+    authController.protect,
+    authController.restrictTo("gym-owner"),
+    roomController.activeRoom
+  );
+
+router
   .route("/:id/reviews")
   .get(reviewController.getAllComments)
   .post(
