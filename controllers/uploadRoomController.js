@@ -28,7 +28,9 @@ exports.upload = multer({
   fileFilter,
 });
 
-const hostName = "127.0.0.1:3001/rooms/";
+const hostName = `${process.env.HOSTNAME || "127.0.0.1"}:${
+  process.env.NODE_APP_PORT_NUMBER || 3001
+}/rooms/`;
 
 exports.handlePostRoomImages = (req, res, next) => {
   try {
